@@ -30,11 +30,6 @@ public class UsersController {
         return userService.getUserByIdDto(userId);
     }
 
-    @PostMapping("/users/register")
-    public ResponseEntity<String> createUser(@RequestBody User user){
-        return userService.createUser(user);
-    }
-
     @PatchMapping("/users/{userId}")
     public ResponseEntity<String> patchUser(@PathVariable int userId, @RequestBody UserUpdateDto dto){
         return userService.patchUser(userId, dto);

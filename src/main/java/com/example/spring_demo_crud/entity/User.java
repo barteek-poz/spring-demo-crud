@@ -19,6 +19,17 @@ public class User {
     @Column(name="password")
     private String password;
 
+    @Column(name="role")
+    private String role;
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
     public User(String firstName, String email, String password) {
         this.firstName = firstName;
         this.email = email;
