@@ -9,6 +9,7 @@ import com.example.spring_demo_crud.service.JwtService;
 import com.example.spring_demo_crud.service.UserService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -47,16 +48,20 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public AuthResponse login (@RequestBody AuthRequest request){
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.email(), request.password())
+    public AuthResponse login(@RequestBody AuthRequest request) {
+
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        request.email(),
+                        request.password()
+                )
         );
 
-        UserDetails userDetails = new org.springframework.security.core.userdetails.User(
-                request.email(), "", List.of() // obiekt pomocniczy do wygenerowania tokena, "" to brak hasla, List.of() to role
-        );
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
         String token = jwtService.generateToken(userDetails);
-        return new AuthResponse(token); // dlaczego return new
+
+        return new AuthResponse(token);
     }
 }
+

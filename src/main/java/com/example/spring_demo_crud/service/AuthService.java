@@ -9,3 +9,5 @@ public interface AuthService {
     ResponseEntity<String> createUser(User user);
     String encodePassword(String password);
 }
+
+
