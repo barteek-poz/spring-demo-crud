@@ -1,6 +1,10 @@
 package com.example.spring_demo_crud.entity;
 
+import com.example.spring_demo_crud.dto.TravelDto;
 import jakarta.persistence.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name="user")
@@ -21,6 +25,21 @@ public class User {
 
     @Column(name="role")
     private String role;
+
+    @OneToMany(mappedBy = "user",
+                cascade = {CascadeType.ALL})
+    private List<Travel> travels;
+
+    public List<Travel> getTravels() {
+        return travels;
+    }
+
+    public void addTravel(Travel travel) {
+        if(travels == null) {
+            travels = new ArrayList<>();
+        }
+        travels.add(travel);
+    }
 
     public String getRole() {
         return role;
@@ -66,5 +85,17 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", firstName='" + firstName + '\'' +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", role='" + role + '\'' +
+                ", travels=" + travels +
+                '}';
     }
 }
