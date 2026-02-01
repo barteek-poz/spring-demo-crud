@@ -26,6 +26,9 @@ public class User {
     @Column(name="role")
     private String role;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<RefreshToken> refreshTokens;
+
     @OneToMany(mappedBy = "user",
                 cascade = {CascadeType.ALL})
     private List<Travel> travels;
@@ -39,6 +42,17 @@ public class User {
             travels = new ArrayList<>();
         }
         travels.add(travel);
+    }
+
+    public void addRefreshToken(RefreshToken refreshToken) {
+        if(refreshTokens == null){
+            refreshTokens = new ArrayList<>();
+        }
+        refreshTokens.add(refreshToken);
+    }
+
+    public List<RefreshToken> getRefreshTokens() {
+        return refreshTokens;
     }
 
     public String getRole() {

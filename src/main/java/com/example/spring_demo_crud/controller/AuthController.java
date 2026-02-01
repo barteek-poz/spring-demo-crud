@@ -3,6 +3,7 @@ package com.example.spring_demo_crud.controller;
 import com.example.spring_demo_crud.dao.UserRepository;
 import com.example.spring_demo_crud.dto.AuthRequest;
 import com.example.spring_demo_crud.dto.AuthResponse;
+import com.example.spring_demo_crud.dto.RefreshTokenDto;
 import com.example.spring_demo_crud.entity.User;
 import com.example.spring_demo_crud.service.AuthService;
 import com.example.spring_demo_crud.service.JwtService;
@@ -25,13 +26,13 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
     private final AuthService authService;
-    private final PasswordEncoder passwordEncoder; // dlaczego password jest dekodowany w kontrolerze?
+    private final UserRepository userRepository;
 
-    public AuthController(AuthenticationManager authenticationManager, JwtService jwtService, AuthService authService, PasswordEncoder passwordEncoder) {
+    public AuthController(AuthenticationManager authenticationManager, JwtService jwtService, AuthService authService, PasswordEncoder passwordEncoder, UserRepository userRepository) {
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
         this.authService = authService;
-        this.passwordEncoder = passwordEncoder;
+        this.userRepository = userRepository;
     }
 
     @PostMapping("/register")
@@ -56,12 +57,16 @@ public class AuthController {
                         request.password()
                 )
         );
-
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        User user = userRepository.findByEmail(request.email()).orElseThrow();
+        String accessToken = jwtService.generateToken(userDetails);
+        String refreshToken = authService.createRefreshToken(user);
+        return new AuthResponse(accessToken, refreshToken);
+    }
 
-        String token = jwtService.generateToken(userDetails);
-
-        return new AuthResponse(token);
+    @PostMapping("/refresh")
+    public AuthResponse refresh(@RequestBody RefreshTokenDto request){
+        return authService.refresh(request.refreshToken());
     }
 }
 
